@@ -10,7 +10,7 @@ A very simple search engine. Uses an inverted index over a folder of TXT files.
 public class SimpleEngine {
 
    public static void main(String[] args) throws IOException {
-      final Path currentWorkingPath = Paths.get("C:\\Users\\Mayankkasturia\\Documents\\NetBeansProjects\\homework3").toAbsolutePath();
+      final Path currentWorkingPath = Paths.get("C:\\Users\\Mayankkasturia\\Documents\\NetBeansProjects\\homework3\\files").toAbsolutePath();
       
       // the inverted index
       final NaiveInvertedIndex index = new NaiveInvertedIndex();
@@ -35,10 +35,10 @@ public class SimpleEngine {
          public FileVisitResult visitFile(Path file,
           BasicFileAttributes attrs) throws FileNotFoundException {
             // only process .txt files
-            if (file.toString().endsWith(".txt")) {
+            if (file.toString().endsWith(".txt") ) {
                // we have found a .txt file; add its name to the fileName list,
                // then index the file and increase the document ID counter.
-              //System.out.println("Indexing file " + file.getFileName());
+              System.out.println("Indexing file " + file.getFileName());
                
                
                fileNames.add(file.getFileName().toString());
@@ -86,8 +86,8 @@ public class SimpleEngine {
        SimpleTokenStream simpleTokenObj= new SimpleTokenStream(file);
        int pos=0;
        while(simpleTokenObj.hasNextToken()){
-           String fn= file.getName();
-           index.addTerm(simpleTokenObj.nextToken(), fn,pos);
+          // String fn= file.getName();
+           index.addTerm(simpleTokenObj.nextToken(), docID,pos);
            pos++;
            
        }
@@ -118,7 +118,7 @@ public class SimpleEngine {
        
        String token[]=index.getDictionary();
        for(String temp:token){
-           HashMap<String,List<Integer>> finalList=(index.getPostings(temp));
+           HashMap<Integer,List<Integer>> finalList=(index.getPostings(temp));
            System.out.println(temp+" : "+finalList);
        }
        
@@ -138,7 +138,8 @@ public class SimpleEngine {
         
         if(y<0){
         System.out.println("Word does not present ");
-        System.exit(0);
+        searchWord(index);
+        
         }
         else{
             System.out.println(index.getPostings(word));

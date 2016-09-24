@@ -3,21 +3,21 @@ import java.util.*;
 
 public class NaiveInvertedIndex {
    //private HashMap<String, List<Integer>> mIndex;
-   private HashMap<String, HashMap<String,List<Integer>>> mIndex;
+   private HashMap<String, HashMap<Integer,List<Integer>>> mIndex;
     
    public NaiveInvertedIndex() {
-      mIndex = new HashMap<String, HashMap<String,List<Integer>>>();
+      mIndex = new HashMap<String, HashMap<Integer,List<Integer>>>();
    }
    
    
-      public void addTerm(String term, String documentID,int pos) {
+      public void addTerm(String term, Integer documentID,int pos) {
       // TO-DO: add the term to the index hashtable. If the table does not have
       // an entry for the term, initialize a new ArrayList<Integer>, add the 
       // docID to the list, and put it into the map. Otherwise add the docID
       // to the list that already exists in the map, but ONLY IF the list does
       // not already contain the docID.
        if(mIndex.get(term)==null){
-           HashMap<String,List<Integer>> docMap =new HashMap<String,List<Integer>>();
+           HashMap<Integer,List<Integer>> docMap =new HashMap<Integer,List<Integer>>();
            ArrayList<Integer> termPos=new ArrayList<Integer>();
            termPos.add(pos);
            //docList.add(documentID);
@@ -40,7 +40,7 @@ public class NaiveInvertedIndex {
    }
 
    
-   public HashMap<String,List<Integer>> getPostings(String term) {
+   public HashMap<Integer,List<Integer>> getPostings(String term) {
       // TO-DO: return the postings list for the given term from the index map.
       return mIndex.get(term);
    }
@@ -54,7 +54,7 @@ public class NaiveInvertedIndex {
    public String[] getDictionary() {
       // TO-DO: fill an array of Strings with all the keys from the hashtable.
       // Sort the array and return it.
-       Map<String,HashMap<String,List<Integer>>> treeMap = new TreeMap<String,HashMap<String,List<Integer>>>(mIndex); 
+       Map<String,HashMap<Integer,List<Integer>>> treeMap = new TreeMap<String,HashMap<Integer,List<Integer>>>(mIndex); 
        String temp[]=new String[mIndex.size()];
        int i=0;
        for(String temp1: treeMap.keySet()){
