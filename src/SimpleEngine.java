@@ -38,7 +38,7 @@ public class SimpleEngine {
             if (file.toString().endsWith(".txt") ) {
                // we have found a .txt file; add its name to the fileName list,
                // then index the file and increase the document ID counter.
-              System.out.println("Indexing file " + file.getFileName());
+              //System.out.println("Indexing file " + file.getFileName());
                
                
                fileNames.add(file.getFileName().toString());
@@ -57,7 +57,7 @@ public class SimpleEngine {
 
       });
       
-      //printResults(index, fileNames);
+      printResults(index, fileNames);
       searchWord(index);
       
       // Implement the same program as in Homework 1: ask the user for a term,
