@@ -42,6 +42,7 @@ public class SimpleEngine {
                
                
                fileNames.add(file.getFileName().toString());
+             
                indexFile(file.toFile(), index, mDocumentID);
                mDocumentID++;
             }
