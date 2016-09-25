@@ -71,6 +71,7 @@ public class NaiveInvertedIndex {
          
            i++;
        }
+       
       return temp;
    }
 }

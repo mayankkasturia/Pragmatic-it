@@ -38,7 +38,7 @@ public class SimpleEngine {
             if (file.toString().endsWith(".txt") ) {
                // we have found a .txt file; add its name to the fileName list,
                // then index the file and increase the document ID counter.
-              //System.out.println("Indexing file " + file.getFileName());
+              System.out.println("Indexing file " + file.getFileName());
                
                
                fileNames.add(file.getFileName().toString());
@@ -133,17 +133,24 @@ public class SimpleEngine {
             System.out.println("Bye!");
             System.exit(0);
         }
-        int y = Arrays.binarySearch(token, word);
+        
+       // int y = Arrays.binarySearch(token, word);
            
+        try{
+            if(("null").equals(index.getPostings(word).toString())){
+                System.out.println("Word does not present ");
+                searchWord(index);
         
-        if(y<0){
-        System.out.println("Word does not present ");
-        searchWord(index);
-        
+            }
+            else{
+                System.out.println(index.getPostings(word));
+                searchWord(index);
+            }
         }
-        else{
-            System.out.println(index.getPostings(word));
-            searchWord(index);
+        catch(NullPointerException e){
+            System.out.println("Word does not present ");
+                searchWord(index);
+            
         }
   
     }
