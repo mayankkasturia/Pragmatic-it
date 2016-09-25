@@ -38,7 +38,7 @@ public class SimpleEngine {
             if (file.toString().endsWith(".txt") ) {
                // we have found a .txt file; add its name to the fileName list,
                // then index the file and increase the document ID counter.
-              System.out.println("Indexing file " + file.getFileName());
+              //System.out.println("Indexing file " + file.getFileName());
                
                
                fileNames.add(file.getFileName().toString());
@@ -58,8 +58,8 @@ public class SimpleEngine {
 
       });
       
-      printResults(index, fileNames);
-      searchWord(index);
+     // printResults(index, fileNames);
+      searchWord(index,fileNames);
       
       // Implement the same program as in Homework 1: ask the user for a term,
       // retrieve the postings list for that term, and print the names of the 
@@ -124,7 +124,7 @@ public class SimpleEngine {
        }
        
    }
-   public static void searchWord(NaiveInvertedIndex index) {
+   public static void searchWord(NaiveInvertedIndex index, List<String> fileNames) {
        String token[]=index.getDictionary();
          System.out.println("Enter a term to search for: ");
         Scanner s = new Scanner(System.in);
@@ -140,17 +140,28 @@ public class SimpleEngine {
         try{
             if(("null").equals(index.getPostings(word).toString())){
                 System.out.println("Word does not present ");
-                searchWord(index);
+                searchWord(index,fileNames);
         
             }
             else{
-                System.out.println(index.getPostings(word));
-                searchWord(index);
+                 HashMap<Integer,List<Integer>> mIndex=index.getPostings(word);
+                 Iterator itr=mIndex.entrySet().iterator();
+                 while(itr.hasNext()){
+                      Map.Entry entry=(Map.Entry)itr.next();
+                      System.out.println(fileNames.get(Integer.parseInt(entry.getKey().toString()))+" ");
+                      //System.out.println(entry.getValue());
+                      
+                    
+         
+                    
+                   }
+                
+                searchWord(index,fileNames);
             }
         }
         catch(NullPointerException e){
             System.out.println("Word does not present ");
-                searchWord(index);
+                searchWord(index,fileNames);
             
         }
   
