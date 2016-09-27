@@ -58,8 +58,8 @@ public class SimpleEngine {
 
       });
       
-     // printResults(index, fileNames);
-      searchWord(index,fileNames);
+     printResults(index, fileNames);
+      //searchWord(index,fileNames);
       
       // Implement the same program as in Homework 1: ask the user for a term,
       // retrieve the postings list for that term, and print the names of the 
@@ -88,7 +88,11 @@ public class SimpleEngine {
        int pos=0;
        while(simpleTokenObj.hasNextToken()){
           // String fn= file.getName();
-           index.addTerm(simpleTokenObj.nextToken(), docID,pos);
+           //Write code for PorterStemmer
+           String temp[]= TestPorterStemmer.callPC(simpleTokenObj.nextToken());
+           for(String temp1: temp){
+            index.addTerm(temp1, docID,pos);   
+           }
            pos++;
            
        }
@@ -124,7 +128,7 @@ public class SimpleEngine {
        }
        
    }
-   public static void searchWord(NaiveInvertedIndex index, List<String> fileNames) {
+   public static void searchWord(NaiveInvertedIndex index, List<String> fileNames) { //Write code for PorterStemmer
        String token[]=index.getDictionary();
          System.out.println("Enter a term to search for: ");
         Scanner s = new Scanner(System.in);
