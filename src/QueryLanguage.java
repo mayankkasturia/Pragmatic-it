@@ -151,7 +151,7 @@ public static void queryParser(NaiveInvertedIndex index, String query,List<Strin
 //list.add output of function search passing strictPhrase.
             Set<String> phraseSet;
 
-            phraseSet = phraseWordQuery(index, strictPhrase);
+            phraseSet = phraseWordQuery(index, strictPhrase,fileNames);
             phraseList = new ArrayList<>(phraseSet);
             remainderString = input.substring(lastPhraseIndex + 1, input.length());
 
@@ -235,25 +235,28 @@ public static void queryParser(NaiveInvertedIndex index, String query,List<Strin
         return tempDocSet;
     }
     
-    public static Set phraseWordQuery(NaiveInvertedIndex index, String query) {
+    public static Set phraseWordQuery(NaiveInvertedIndex index, String query,List<String> fileNames) {
         System.out.println("I am PHRASE Query");
         String token[] = index.getDictionary();
         HashMap<Integer, List<Integer>> tempPosSet1 = new HashMap<>();
         HashMap<Integer, List<Integer>> tempPosSet2;
         String[] word = query.split("[ ]");
         for (String temp : word) {
-            temp = temp.toLowerCase();//add ps
+            //temp = temp.toLowerCase();//add ps
             String temp3[] = SimpleEngine.callPC(temp);
                 for(String temp2: temp3){
-            int y = Arrays.binarySearch(token, temp2);
-            if (y < 0) {
-                System.out.println("Word does not present ");
-                System.exit(0);
-            } else if (tempPosSet1.isEmpty()) {
-                tempPosSet1 = index.getPostings(temp);
+//            int y = Arrays.binarySearch(token, temp2);
+//            if (y < 0) {
+//                System.out.println("Word does not present ");
+//                System.exit(0);
+            if(("null").equals(index.getPostings(temp2).toString())){
+            System.out.println("Word does not present, enter query again or :q to quit ");
+        }
+             else if (tempPosSet1.isEmpty()) {
+                tempPosSet1 = index.getPostings(temp2);
                 //System.out.println("Temp Doc set with Postings1: " + tempPosSet1);
             } else {
-                tempPosSet2 = index.getPostings(temp);
+                tempPosSet2 = index.getPostings(temp2);
                 //System.out.println("Temp Doc set with Postings1: " + tempPosSet1);
                 //System.out.println("Temp Doc set with Postings2: " + tempPosSet2);
                 HashMap<Integer, List<Integer>> tempPosSet3 = new HashMap<>();
