@@ -91,7 +91,7 @@ public class QueryLanguage {
             System.out.println("Enter Query or :q to return to Main Menu: ");
               while (counter == 0) {
                 String query1 = readQueryFromUser();
-                queryParser(index, query1);
+                queryParser(index, query1,fileNames);
                 
             if (query1.equalsIgnoreCase(":q")) {
             System.out.println("Exit index, return to the main menu!");
@@ -135,12 +135,15 @@ public class QueryLanguage {
         main(new String[] {"a","b","c"});
     }
 
-public static void queryParser(NaiveInvertedIndex index, String query) {
+public static void queryParser(NaiveInvertedIndex index, String query,List<String> fileNames) throws IOException {
         List<String> phraseList = new ArrayList<>();
         String pharseIdentifier = "\"";
 // Prepare a final outPut List.
         String input = query;
-
+        if (input.equalsIgnoreCase(":q")) {
+            System.out.println("Exit index, return to the main menu!");
+            main(new String[] {"a","b","c"});
+        }
         int lastPhraseIndex = input.lastIndexOf(pharseIdentifier);
         String remainderString = null;
         if (lastPhraseIndex > -1) {
@@ -148,7 +151,7 @@ public static void queryParser(NaiveInvertedIndex index, String query) {
 //list.add output of function search passing strictPhrase.
             Set<String> phraseSet;
 
-            phraseSet = phraseWordQuery(index, strictPhrase);
+            phraseSet = phraseWordQuery(index, strictPhrase,fileNames);
             phraseList = new ArrayList<>(phraseSet);
             remainderString = input.substring(lastPhraseIndex + 1, input.length());
 
@@ -205,7 +208,7 @@ public static void queryParser(NaiveInvertedIndex index, String query) {
         finalResultList = new ArrayList<>(set);
         Iterator iterator = finalResultList.iterator();
         while (iterator.hasNext()) {
-            System.out.println("Query Parser Index: " + iterator.next());
+            System.out.println("Query Parser Index: " + fileNames.get(Integer.parseInt(iterator.next().toString())));
         }
     }
     
@@ -220,35 +223,40 @@ public static void queryParser(NaiveInvertedIndex index, String query) {
         Set<Integer> tempDocSet = new HashSet<>();
         String temp[] = SimpleEngine.callPC(word);
                 for(String temp1: temp){
+                    System.out.println(index.getPostings(word));
         if(("null").equals(index.getPostings(word).toString())){
             System.out.println("Word does not present, enter query again or :q to quit ");
         } else {
 
             tempDocSet = index.getPostings(temp1).keySet();
         }
+        
                 }
         return tempDocSet;
     }
     
-    public static Set phraseWordQuery(NaiveInvertedIndex index, String query) {
+    public static Set phraseWordQuery(NaiveInvertedIndex index, String query,List<String> fileNames) {
         System.out.println("I am PHRASE Query");
         String token[] = index.getDictionary();
         HashMap<Integer, List<Integer>> tempPosSet1 = new HashMap<>();
         HashMap<Integer, List<Integer>> tempPosSet2;
         String[] word = query.split("[ ]");
         for (String temp : word) {
-            temp = temp.toLowerCase();//add ps
+            //temp = temp.toLowerCase();//add ps
             String temp3[] = SimpleEngine.callPC(temp);
                 for(String temp2: temp3){
-            int y = Arrays.binarySearch(token, temp2);
-            if (y < 0) {
-                System.out.println("Word does not present ");
-                System.exit(0);
-            } else if (tempPosSet1.isEmpty()) {
-                tempPosSet1 = index.getPostings(temp);
+//            int y = Arrays.binarySearch(token, temp2);
+//            if (y < 0) {
+//                System.out.println("Word does not present ");
+//                System.exit(0);
+            if(("null").equals(index.getPostings(temp2).toString())){
+            System.out.println("Word does not present, enter query again or :q to quit ");
+        }
+             else if (tempPosSet1.isEmpty()) {
+                tempPosSet1 = index.getPostings(temp2);
                 //System.out.println("Temp Doc set with Postings1: " + tempPosSet1);
             } else {
-                tempPosSet2 = index.getPostings(temp);
+                tempPosSet2 = index.getPostings(temp2);
                 //System.out.println("Temp Doc set with Postings1: " + tempPosSet1);
                 //System.out.println("Temp Doc set with Postings2: " + tempPosSet2);
                 HashMap<Integer, List<Integer>> tempPosSet3 = new HashMap<>();
