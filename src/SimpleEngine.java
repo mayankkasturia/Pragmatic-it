@@ -146,6 +146,7 @@ public class SimpleEngine {
 		String word1 = s.next();*/
 		String temp[]= callPC(searchWord);
 		for(String word: temp){
+
 //			if (word.equalsIgnoreCase("quit")) {
 //				System.out.println("Bye!");
 //				System.exit(0);}
@@ -168,6 +169,7 @@ public class SimpleEngine {
 					//searchWord(index,fileNames);
                                     }
                             }
+
 			catch(NullPointerException e){
 				System.out.println("Word does not present ");
 				//searchWord(index,fileNames);

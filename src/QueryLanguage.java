@@ -103,10 +103,12 @@ public class QueryLanguage {
                 booleanQuery=true;    
             }
             if(booleanQuery==false){
+
             	SimpleEngine.searchWord(index,fileNames,query1);
             	
             }
             booleanQuery=false;
+
             
             
             if (query1.equalsIgnoreCase(":q")) {
