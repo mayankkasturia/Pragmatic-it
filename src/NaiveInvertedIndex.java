@@ -50,6 +50,10 @@ public class NaiveInvertedIndex {
       
       return mIndex.size();
    }
+   public Set<Integer> getDocumentId(String term) {
+        // TO-DO: return the postings list for the given term from the index map.
+        return mIndex.get(term).keySet();
+    }
    
    public String[] getDictionary() {
       // TO-DO: fill an array of Strings with all the keys from the hashtable.

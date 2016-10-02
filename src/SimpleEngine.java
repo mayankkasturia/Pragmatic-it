@@ -9,8 +9,10 @@ A very simple search engine. Uses an inverted index over a folder of TXT files.
 */
 public class SimpleEngine {
 
-   public static void main(String[] args) throws IOException {
-      final Path currentWorkingPath = Paths.get("C:\\Users\\Mayankkasturia\\Documents\\NetBeansProjects\\homework3\\files").toAbsolutePath();
+   //public static void main(String[] args) throws IOException {
+       
+      public static NaiveInvertedIndex getIndex(String corpusName)throws IOException {
+      final Path currentWorkingPath = Paths.get(corpusName).toAbsolutePath();
       
       // the inverted index
       final NaiveInvertedIndex index = new NaiveInvertedIndex();
@@ -58,14 +60,14 @@ public class SimpleEngine {
 
       });
       
-     printResults(index, fileNames);
+     //printResults(index, fileNames);
       //searchWord(index,fileNames);
       
       // Implement the same program as in Homework 1: ask the user for a term,
       // retrieve the postings list for that term, and print the names of the 
       // documents which contain the term.
       
-      
+     return index; 
    }
 
    /**
@@ -89,7 +91,7 @@ public class SimpleEngine {
        while(simpleTokenObj.hasNextToken()){
           // String fn= file.getName();
            //Write code for PorterStemmer
-           String temp[]= TestPorterStemmer.callPC(simpleTokenObj.nextToken());
+           String temp[]= callPC(simpleTokenObj.nextToken());
            for(String temp1: temp){
             index.addTerm(temp1, docID,pos);   
            }
@@ -132,7 +134,11 @@ public class SimpleEngine {
        String token[]=index.getDictionary();
          System.out.println("Enter a term to search for: ");
         Scanner s = new Scanner(System.in);
-        String word = s.next();
+        String word1 = s.next();
+        String temp[]= callPC(word1);
+           for(String word: temp){
+            
+           
 
         if (word.equalsIgnoreCase("quit")) {
             System.out.println("Bye!");
@@ -169,5 +175,23 @@ public class SimpleEngine {
             
         }
   
-    }
+    }}
+      public static String[] callPC(String token){
+       String[] processToken;
+
+            ArrayList<String> normalizeToken=new ArrayList<>();
+            normalizeToken = NormalizeToken.normalizeToken(token);
+                //System.out.println("Normalized Token: " + normalizeToken);
+            int i=0;
+            processToken=new String[normalizeToken.size()];
+                for(String tkn:normalizeToken){
+                //System.out.println("we are on "+tkn);
+                processToken[i] = PorterStemmer.processToken(tkn);
+                //System.out.println("stem: " + processToken);
+                i++;
+                }
+
+        return processToken;
+
+   }
 }

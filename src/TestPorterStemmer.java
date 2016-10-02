@@ -35,32 +35,7 @@ public class TestPorterStemmer {
 //
 //    }
    
-   public static String[] callPC(String token){
-       String[] processToken;
-//        Scanner scan = new Scanner(System.in);
-//        System.out.println("Enter token");
-//        while (scan.hasNext()) {
-//     
-//            if (token.equals("q")) {
-//                break;
-//            }
-            
-            ArrayList<String> normalizeToken=new ArrayList<>();
-            normalizeToken = NormalizeToken.normalizeToken(token);
-                //System.out.println("Normalized Token: " + normalizeToken);
-            int i=0;
-            processToken=new String[normalizeToken.size()];
-                for(String tkn:normalizeToken){
-                //System.out.println("we are on "+tkn);
-                processToken[i] = PorterStemmer.processToken(tkn);
-                System.out.println("stem: " + processToken);
-                i++;
-                }
-            
-   //}
-        return processToken;
 
-   }
 
 }
 
