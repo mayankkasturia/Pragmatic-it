@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
-import static searchengine.Soundex.soundex;
+
 
 /**
  *
@@ -87,113 +89,168 @@ public class QueryLanguage {
 
             int counter = 0;
             System.out.println("Enter Query or :q to return to Main Menu: ");
-            while(counter == 0)
-            {
-            String query1 = readQueryFromUser();
-            
-            
-            if(query1.contains(" ")){
-                query1 = query1.replaceAll("[ ]", "&");
-                //System.out.println("Replacing space with & operator: " + query1);
-                andWordQuery(index,query1);
-                booleanQuery=true;
-            }
-            if(query1.contains("+")){
-                freeWordQuery(index,query1);
-                booleanQuery=true;    
-            }
-            if(booleanQuery==false){
-
-            	SimpleEngine.searchWord(index,fileNames,query1);
-            	
-            }
-            booleanQuery=false;
-
-            
-            
+              while (counter == 0) {
+                String query1 = readQueryFromUser();
+                queryParser(index, query1);
+                
             if (query1.equalsIgnoreCase(":q")) {
             System.out.println("Exit index, return to the main menu!");
             main(new String[] {"a","b","c"});
         }
+            }
+           
+//            while(counter == 0)
+//            {
+//            String query1 = readQueryFromUser();
+//            if(query1.contains(" ")){
+//                query1 = query1.replaceAll("[ ]", "&");
+//                //System.out.println("Replacing space with & operator: " + query1);
+//                andWordQuery(index,query1);
+//                booleanQuery=true;
+//            }
+//            if(query1.contains("+")){
+//                freeWordQuery(index,query1);
+//                booleanQuery=true;    
+//            }
+//            if(booleanQuery==false){
+//
+//            	SimpleEngine.searchWord(index,fileNames,query1);
+//            }
+//            booleanQuery=false;
+//
+//            
+//            
+//            if (query1.equalsIgnoreCase(":q")) {
+//            System.out.println("Exit index, return to the main menu!");
+//            main(new String[] {"a","b","c"});
+//        }
+//        }
         }
-        }
-       /* if (query.equalsIgnoreCase(":soundex")) {
-            String code1 = soundex("Mani");
-            String code2 = soundex("Money");
+       if (query.equalsIgnoreCase(":soundex")) {
+            String code1 = soundex.Soundex.soundex("Mani");
+            String code2 = soundex.Soundex.soundex("Money");
             System.out.println(code1 + ": " + "Mani");
             System.out.println(code2 + ": " + "Money");
-        }*/
+        }
         main(new String[] {"a","b","c"});
     }
 
-public static String readQueryFromUser() {
+public static void queryParser(NaiveInvertedIndex index, String query) {
+        List<String> phraseList = new ArrayList<>();
+        String pharseIdentifier = "\"";
+// Prepare a final outPut List.
+        String input = query;
+
+        int lastPhraseIndex = input.lastIndexOf(pharseIdentifier);
+        String remainderString = null;
+        if (lastPhraseIndex > -1) {
+            String strictPhrase = input.substring(1, lastPhraseIndex);
+//list.add output of function search passing strictPhrase.
+            Set<String> phraseSet;
+
+            phraseSet = phraseWordQuery(index, strictPhrase);
+            phraseList = new ArrayList<>(phraseSet);
+            remainderString = input.substring(lastPhraseIndex + 1, input.length());
+
+        } else {
+            remainderString = input;
+        }
+
+        StringTokenizer orTokenizer = new StringTokenizer(remainderString, "+");
+        List<List<String>> resultList = new ArrayList<>();
+        while (orTokenizer.hasMoreTokens()) {
+            String andTokens = orTokenizer.nextToken();
+            StringTokenizer andTokensizer = new StringTokenizer(andTokens, " ");
+            Set<String> andTokensResultSet = new TreeSet<>();
+            List<String> andTokensResults = new ArrayList<>();
+            if (!phraseList.isEmpty()) {
+                    andTokensResultSet.addAll(phraseList);
+                }
+            while (andTokensizer.hasMoreTokens()) {
+                String toStem = andTokensizer.nextToken();
+                String temp[] = SimpleEngine.callPC(toStem);
+                for(String word: temp){
+                if(andTokensResultSet.isEmpty()){
+                andTokensResultSet = wordQuery(index, word);//add ps 
+                } else{
+                   andTokensResultSet.retainAll(index.getDocumentId(word));
+                }
+                if (andTokensizer.countTokens() >= 1) {
+                    andTokensResultSet.retainAll(index.getDocumentId(word));
+                    
+                }
+                //System.out.println("Temp Doc for " + temp + tempDocSet);
+                andTokensResults = new ArrayList<>(andTokensResultSet);
+// do a function search passing andTokensizer.nextToken and store it in andTokensResults.
+// do a intersection of  the results of other token with andTokensResults and store the same in andTokensResults.
+
+            }
+// store the results of all the andTokens into the result lsit.
+            
+            resultList.add(andTokensResults);
+        }}
+        List<String> finalResultList = new ArrayList<>();
+        Set<String> set = new HashSet<>();
+
+// Now traverse the resultList and do the union of each list stored.
+        for (List a : resultList) {
+            set.addAll(a);
+        }
+        finalResultList = new ArrayList<>(set);
+
+// finally add the result of strictPhrase into the same and return your result.
+        if (finalResultList.isEmpty()) {
+            set.addAll(phraseList);
+        }
+        finalResultList = new ArrayList<>(set);
+        Iterator iterator = finalResultList.iterator();
+        while (iterator.hasNext()) {
+            System.out.println("Query Parser Index: " + iterator.next());
+        }
+    }
+    
+    public static String readQueryFromUser() {
         Scanner s = new Scanner(System.in);
         String query = s.nextLine();
         return query;
     }
 
-
-    public static void freeWordQuery(NaiveInvertedIndex index, String query) {
-         System.out.println("I am OR Query");
-        String token[] = index.getDictionary();
-        String [] word = query.split("[//+]");
-       // String [] word = strSplit(query, "\\+");
+    public static Set wordQuery(NaiveInvertedIndex index, String word) {
+        System.out.println("I am General Query");
         Set<Integer> tempDocSet = new HashSet<>();
-        for (String temp : word) {
-            temp = temp.toLowerCase();
-            int y = Arrays.binarySearch(token, temp);
-            if (y < 0) {
-                System.out.println("Word does not present, enter query again or :q to quit ");
-            } else {
+        String temp[] = SimpleEngine.callPC(word);
+                for(String temp1: temp){
+        if(("null").equals(index.getPostings(word).toString())){
+            System.out.println("Word does not present, enter query again or :q to quit ");
+        } else {
 
-                tempDocSet.addAll(index.getDocumentId(temp));
-            }
+            tempDocSet = index.getPostings(temp1).keySet();
         }
-        System.out.println("New Index: " + tempDocSet);
-       // freeWordQuery(index);
+                }
+        return tempDocSet;
     }
-
-    public static void andWordQuery(NaiveInvertedIndex index, String query) {
-        System.out.println("I am AND Query");
-        String token[] = index.getDictionary();
-        String [] word = query.split("[&]");
-        Set<Integer> tempDocSet = new HashSet<>();
-        for (String temp : word) {
-            temp = temp.toLowerCase();
-            int y = Arrays.binarySearch(token, temp);
-            if (y < 0) {
-                System.out.println("Word does not present, enter query again or :q to quit ");
-            } else if (tempDocSet.isEmpty()) {
-                tempDocSet = index.getDocumentId(temp);
-                //System.out.println("Temp Doc for " + temp + tempDocSet);
-            } else {
-                tempDocSet.retainAll(index.getDocumentId(temp));
-                //System.out.println("Temp Doc for " + temp + tempDocSet);
-            }
-        }
-        System.out.println("Returned Index: " + tempDocSet);
-       // andWordQuery(index);
-    }
-
-    /*public static void phraseWordQuery(NaiveInvertedIndex index) {
+    
+    public static Set phraseWordQuery(NaiveInvertedIndex index, String query) {
         System.out.println("I am PHRASE Query");
         String token[] = index.getDictionary();
-        String[] word = readQueryFromUser();
         HashMap<Integer, List<Integer>> tempPosSet1 = new HashMap<>();
         HashMap<Integer, List<Integer>> tempPosSet2;
+        String[] word = query.split("[ ]");
         for (String temp : word) {
-            temp = temp.toLowerCase();
-            int y = Arrays.binarySearch(token, temp);
+            temp = temp.toLowerCase();//add ps
+            String temp3[] = SimpleEngine.callPC(temp);
+                for(String temp2: temp3){
+            int y = Arrays.binarySearch(token, temp2);
             if (y < 0) {
                 System.out.println("Word does not present ");
                 System.exit(0);
             } else if (tempPosSet1.isEmpty()) {
                 tempPosSet1 = index.getPostings(temp);
-                System.out.println("Temp Doc set with Postings1: " + tempPosSet1);
+                //System.out.println("Temp Doc set with Postings1: " + tempPosSet1);
             } else {
                 tempPosSet2 = index.getPostings(temp);
-                System.out.println("Temp Doc set with Postings1: " + tempPosSet1);
-                System.out.println("Temp Doc set with Postings2: " + tempPosSet2);
+                //System.out.println("Temp Doc set with Postings1: " + tempPosSet1);
+                //System.out.println("Temp Doc set with Postings2: " + tempPosSet2);
                 HashMap<Integer, List<Integer>> tempPosSet3 = new HashMap<>();
                 for (Integer k : tempPosSet1.keySet()) {
                     ArrayList<Integer> setVal = new ArrayList<>();
@@ -202,7 +259,7 @@ public static String readQueryFromUser() {
                         for (int i = 0; i < values.size(); i++) {
                             if (tempPosSet2.get(k).contains(values.get(i) + 1)) {
                                 setVal.add(values.get(i) + 1);
-                                System.out.println("print value: " + k + ": [" + setVal + "]");
+                                //System.out.println("print value: " + k + ": [" + setVal + "]");
                             }
                             if (!setVal.isEmpty()) {
                                 tempPosSet3.put(k, setVal);
@@ -213,9 +270,11 @@ public static String readQueryFromUser() {
                 tempPosSet1 = tempPosSet3;
             }
         }
-        System.out.println("New Index: " + tempPosSet1);
-        phraseWordQuery(index);
-    } */
+        System.out.println("Phrase Query Index: " + tempPosSet1);
+        //phraseWordQuery(index);
+        }
+        return tempPosSet1.keySet();
+    }
     public static void callStemmer() throws IOException
     {
         Scanner scan = new Scanner(System.in);

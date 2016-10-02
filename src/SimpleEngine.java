@@ -68,7 +68,7 @@ public class SimpleEngine {
 
 		});
 
-		//printResults(index, fileNames);
+		printResults(index, fileNames);
 		//searchWord(index,fileNames);
 
 		// Implement the same program as in Homework 1: ask the user for a term,
