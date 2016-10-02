@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -18,10 +20,13 @@ import static searchengine.Soundex.soundex;
 
 /**
  *
- * @author manikhanuja
+ *
  */
 public class QueryLanguage {
+	static boolean booleanQuery=false;
         public static void main(String[] args) throws IOException {
+        	HashMap<List<String>,NaiveInvertedIndex> fileIndex=new HashMap<List<String>,NaiveInvertedIndex>();
+        	ArrayList<String> fileNames=new ArrayList<String>();
    // public static void readQueryFromUser(NaiveInvertedIndex index) {
 
         System.out.println("Main Menu");
@@ -48,7 +53,18 @@ public class QueryLanguage {
             System.out.println("Enter the name of corpus: ");
             String corpusName = readQueryFromUser();
             NaiveInvertedIndex index = new NaiveInvertedIndex();
-            index =SimpleEngine.getIndex(corpusName);
+            fileIndex =SimpleEngine.getIndex(corpusName);
+			Iterator itr=fileIndex.entrySet().iterator();
+			while(itr.hasNext()){
+				Map.Entry entry=(Map.Entry)itr.next();
+				index=(NaiveInvertedIndex) entry.getValue();
+				fileNames=(ArrayList<String>) entry.getKey();
+				//System.out.println(entry.getValue());
+
+
+			}
+
+            
             getVocabulary(index);
         }
         //Pending
@@ -58,33 +74,53 @@ public class QueryLanguage {
             System.out.println("Enter the name of corpus: ");
             String corpusName = readQueryFromUser();
             NaiveInvertedIndex index = new NaiveInvertedIndex();
-            index =SimpleEngine.getIndex(corpusName);
+            fileIndex =SimpleEngine.getIndex(corpusName);
+			Iterator itr=fileIndex.entrySet().iterator();
+			while(itr.hasNext()){
+				Map.Entry entry=(Map.Entry)itr.next();
+				index=(NaiveInvertedIndex) entry.getValue();
+				fileNames=(ArrayList<String>) entry.getKey();
+				//System.out.println(entry.getValue());
+
+
+			}
+
             int counter = 0;
             System.out.println("Enter Query or :q to return to Main Menu: ");
             while(counter == 0)
             {
             String query1 = readQueryFromUser();
             
+            
             if(query1.contains(" ")){
                 query1 = query1.replaceAll("[ ]", "&");
                 //System.out.println("Replacing space with & operator: " + query1);
                 andWordQuery(index,query1);
+                booleanQuery=true;
             }
             if(query1.contains("+")){
                 freeWordQuery(index,query1);
+                booleanQuery=true;    
             }
+            if(booleanQuery==false){
+            	SimpleEngine.searchWord(index,fileNames,query1);
+            	
+            }
+            booleanQuery=false;
+            
+            
             if (query1.equalsIgnoreCase(":q")) {
             System.out.println("Exit index, return to the main menu!");
             main(new String[] {"a","b","c"});
         }
         }
         }
-        if (query.equalsIgnoreCase(":soundex")) {
+       /* if (query.equalsIgnoreCase(":soundex")) {
             String code1 = soundex("Mani");
             String code2 = soundex("Money");
             System.out.println(code1 + ": " + "Mani");
             System.out.println(code2 + ": " + "Money");
-        }
+        }*/
         main(new String[] {"a","b","c"});
     }
 
