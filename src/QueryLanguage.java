@@ -91,7 +91,7 @@ public class QueryLanguage {
             System.out.println("Enter Query or :q to return to Main Menu: ");
               while (counter == 0) {
                 String query1 = readQueryFromUser();
-                queryParser(index, query1);
+                queryParser(index, query1,fileNames);
                 
             if (query1.equalsIgnoreCase(":q")) {
             System.out.println("Exit index, return to the main menu!");
@@ -135,12 +135,15 @@ public class QueryLanguage {
         main(new String[] {"a","b","c"});
     }
 
-public static void queryParser(NaiveInvertedIndex index, String query) {
+public static void queryParser(NaiveInvertedIndex index, String query,List<String> fileNames) throws IOException {
         List<String> phraseList = new ArrayList<>();
         String pharseIdentifier = "\"";
 // Prepare a final outPut List.
         String input = query;
-
+        if (input.equalsIgnoreCase(":q")) {
+            System.out.println("Exit index, return to the main menu!");
+            main(new String[] {"a","b","c"});
+        }
         int lastPhraseIndex = input.lastIndexOf(pharseIdentifier);
         String remainderString = null;
         if (lastPhraseIndex > -1) {
@@ -205,7 +208,7 @@ public static void queryParser(NaiveInvertedIndex index, String query) {
         finalResultList = new ArrayList<>(set);
         Iterator iterator = finalResultList.iterator();
         while (iterator.hasNext()) {
-            System.out.println("Query Parser Index: " + iterator.next());
+            System.out.println("Query Parser Index: " + fileNames.get(Integer.parseInt(iterator.next().toString())));
         }
     }
     
@@ -220,12 +223,14 @@ public static void queryParser(NaiveInvertedIndex index, String query) {
         Set<Integer> tempDocSet = new HashSet<>();
         String temp[] = SimpleEngine.callPC(word);
                 for(String temp1: temp){
+                    System.out.println(index.getPostings(word));
         if(("null").equals(index.getPostings(word).toString())){
             System.out.println("Word does not present, enter query again or :q to quit ");
         } else {
 
             tempDocSet = index.getPostings(temp1).keySet();
         }
+        
                 }
         return tempDocSet;
     }
