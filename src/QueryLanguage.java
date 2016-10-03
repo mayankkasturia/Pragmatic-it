@@ -19,6 +19,8 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import soundex.Soundex;
+
 
 /**
  *
@@ -56,7 +58,7 @@ public class QueryLanguage {
             System.out.println("Enter the name of corpus: ");
             String corpusName = readQueryFromUser();
             NaiveInvertedIndex index = new NaiveInvertedIndex();
-            fileIndex =SimpleEngine.getIndex(corpusName);
+            fileIndex =SimpleEngine.getIndex(corpusName,"PS");
 			Iterator itr=fileIndex.entrySet().iterator();
 			while(itr.hasNext()){
 				Map.Entry entry=(Map.Entry)itr.next();
@@ -74,7 +76,7 @@ public class QueryLanguage {
             System.out.println("Enter the name of corpus: ");
             String corpusName = readQueryFromUser();
             NaiveInvertedIndex statsIndex = new NaiveInvertedIndex();
-            fileIndex =SimpleEngine.getIndex(corpusName);
+            fileIndex =SimpleEngine.getIndex(corpusName,"");
 			Iterator itr=fileIndex.entrySet().iterator();
 			while(itr.hasNext()){
 				Map.Entry entry=(Map.Entry)itr.next();
@@ -93,7 +95,7 @@ public class QueryLanguage {
             System.out.println("Enter the name of corpus: ");
             String corpusName = readQueryFromUser();
             NaiveInvertedIndex index = new NaiveInvertedIndex();
-            fileIndex =SimpleEngine.getIndex(corpusName);
+            fileIndex =SimpleEngine.getIndex(corpusName,"PS");
 			Iterator itr=fileIndex.entrySet().iterator();
 			while(itr.hasNext()){
 				Map.Entry entry=(Map.Entry)itr.next();
@@ -123,6 +125,44 @@ public class QueryLanguage {
             String code2 = soundex.Soundex.soundex("Money");
             System.out.println(code1 + ": " + "Mani");
             System.out.println(code2 + ": " + "Money");
+            
+            System.out.println("Enter the name of corpus: ");
+            String corpusName = readQueryFromUser();
+            NaiveInvertedIndex index = new NaiveInvertedIndex();
+            String algoType="SoundEX";
+            fileIndex =SimpleEngine.getIndex(corpusName,algoType);
+            
+			Iterator itr=fileIndex.entrySet().iterator();
+			while(itr.hasNext()){
+				Map.Entry entry=(Map.Entry)itr.next();
+				index=(NaiveInvertedIndex) entry.getValue();
+				fileNames=(ArrayList<String>) entry.getKey();
+				//System.out.println(entry.getValue());
+
+
+			}
+
+            int counter = 0;
+            System.out.println("Enter Query or :q to return to Main Menu: ");
+              while (counter == 0) {
+                String query1 = readQueryFromUser();
+                String temp[]=query1.split(":");
+              temp[1]=Soundex.soundex(temp[1]);
+              wordQuery(index,temp[1],"SoundEx");
+
+
+              
+                
+            if (query1.equalsIgnoreCase(":q")) {
+            System.out.println("Exit index, return to the main menu!");
+            main(new String[] {"a","b","c"});
+        }
+            }
+
+            
+            
+            
+            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         }
         main(new String[] {"a","b","c"});
     }
@@ -166,7 +206,7 @@ public static void queryParser(NaiveInvertedIndex index, String query,List<Strin
                 String word = SimpleEngine.callPoterStem(toStem);
                 
                 if(andTokensResultSet.isEmpty()){
-                andTokensResultSet = wordQuery(index, word);//add ps 
+                andTokensResultSet = wordQuery(index, word,"");//add ps 
                 } else{
                    andTokensResultSet.retainAll(index.getDocumentId(word));
                 }
@@ -210,11 +250,21 @@ public static void queryParser(NaiveInvertedIndex index, String query,List<Strin
         return query;
     }
 
-    public static Set wordQuery(NaiveInvertedIndex index, String word) {
+    public static Set wordQuery(NaiveInvertedIndex index, String word, String algoType) {
         System.out.println("I am General Query");
         Set<Integer> tempDocSet = new HashSet<>();
         System.out.println(index.getPostings(word));
-       if(index.getPostings(word)==null){
+        if(algoType.equals("SoundEx")&&index.getPostings(word)!=null){
+        	Iterator itr=index.getPostings(word).entrySet().iterator();
+        	System.out.println("File Names:");
+        	while(itr.hasNext()){
+        		Map.Entry entry=(Map.Entry)itr.next();
+        		System.out.println(SimpleEngine.soundExFileNames.get((int)entry.getKey()));
+				
+				//System.out.println(entry.getValue());
+        	}
+        }
+        if(index.getPostings(word)==null){
             System.out.println("Word does not present, enter query again or :q to quit ");
         } else {
 
