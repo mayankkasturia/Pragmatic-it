@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  *
  */
 public class QueryLanguage {
-	static boolean booleanQuery=false;
+	static boolean booleanQuery=true;
         public static void main(String[] args) throws IOException {
         	HashMap<List<String>,NaiveInvertedIndex> fileIndex=new HashMap<List<String>,NaiveInvertedIndex>();
         	ArrayList<String> fileNames=new ArrayList<String>();
@@ -37,6 +37,7 @@ public class QueryLanguage {
         System.out.println(":vocab - for printing the vocabulary");
         System.out.println(":soundex - for calling soundex algorithm");
         System.out.println(":q - to quit the application");
+        System.out.println(":statistics - for index statistic");
         String query = readQueryFromUser();
        
         // implementing special queries
@@ -69,6 +70,22 @@ public class QueryLanguage {
             
             getVocabulary(index);
         }
+          if (query.equalsIgnoreCase(":statistics")) {
+            System.out.println("Enter the name of corpus: ");
+            String corpusName = readQueryFromUser();
+            NaiveInvertedIndex statsIndex = new NaiveInvertedIndex();
+            fileIndex =SimpleEngine.getIndex(corpusName);
+			Iterator itr=fileIndex.entrySet().iterator();
+			while(itr.hasNext()){
+				Map.Entry entry=(Map.Entry)itr.next();
+				statsIndex=(NaiveInvertedIndex) entry.getValue();
+				fileNames=(ArrayList<String>) entry.getKey();
+				
+
+
+			}
+                        IndexStatistics.getStatistics(statsIndex);
+        }
         //Pending
         // :index directoryname - index the folder specified by directoryname and then begins querying it
         
@@ -99,33 +116,8 @@ public class QueryLanguage {
         }
             }
            
-//            while(counter == 0)
-//            {
-//            String query1 = readQueryFromUser();
-//            if(query1.contains(" ")){
-//                query1 = query1.replaceAll("[ ]", "&");
-//                //System.out.println("Replacing space with & operator: " + query1);
-//                andWordQuery(index,query1);
-//                booleanQuery=true;
-//            }
-//            if(query1.contains("+")){
-//                freeWordQuery(index,query1);
-//                booleanQuery=true;    
-//            }
-//            if(booleanQuery==false){
-//
-//            	SimpleEngine.searchWord(index,fileNames,query1);
-//            }
-//            booleanQuery=false;
-//
-//            
-//            
-//            if (query1.equalsIgnoreCase(":q")) {
-//            System.out.println("Exit index, return to the main menu!");
-//            main(new String[] {"a","b","c"});
-//        }
-//        }
         }
+      
        if (query.equalsIgnoreCase(":soundex")) {
             String code1 = soundex.Soundex.soundex("Mani");
             String code2 = soundex.Soundex.soundex("Money");
@@ -222,7 +214,7 @@ public static void queryParser(NaiveInvertedIndex index, String query,List<Strin
         System.out.println("I am General Query");
         Set<Integer> tempDocSet = new HashSet<>();
         System.out.println(index.getPostings(word));
-        if(("null").equals(index.getPostings(word).toString())){
+       if(index.getPostings(word)==null){
             System.out.println("Word does not present, enter query again or :q to quit ");
         } else {
 
@@ -247,7 +239,7 @@ public static void queryParser(NaiveInvertedIndex index, String query,List<Strin
 //            if (y < 0) {
 //                System.out.println("Word does not present ");
 //                System.exit(0);
-            if(("null").equals(index.getPostings(temp2).toString())){
+            if(index.getPostings(temp2)==null){
             System.out.println("Word does not present, enter query again or :q to quit ");
         }
              else if (tempPosSet1.isEmpty()) {

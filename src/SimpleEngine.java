@@ -45,7 +45,7 @@ public class SimpleEngine {
 			public FileVisitResult visitFile(Path file,
 					BasicFileAttributes attrs) throws FileNotFoundException {
 				// only process .txt files
-				if (file.toString().endsWith(".txt") ) {
+				if (file.toString().endsWith(".txt")|| file.toString().endsWith(".json")  ) {
 					// we have found a .txt file; add its name to the fileName list,
 					// then index the file and increase the document ID counter.
 					//System.out.println("Indexing file " + file.getFileName());
@@ -68,7 +68,7 @@ public class SimpleEngine {
 
 		});
 
-		printResults(index, fileNames);
+		//printResults(index, fileNames);
 		//searchWord(index,fileNames);
 
 		// Implement the same program as in Homework 1: ask the user for a term,
