@@ -14,8 +14,13 @@ package soundex;
 public class Soundex {
 
     public static String soundex(String sname) {
-        char[] coder = sname.toUpperCase().toCharArray();
-        char firstLetter = coder[0];
+        char[] coder = null;
+        char firstLetter = 0;
+        if(sname!=null)
+        	coder= sname.toUpperCase().toCharArray();
+        if(coder!=null){
+        	firstLetter = coder[0];
+        
 
         // conversion of letters in name to numeric code
         for (int i = 0; i < coder.length; i++) {
@@ -55,12 +60,15 @@ public class Soundex {
                     break;
             }
         }
+        }
         // remove any dulipcate items
         String output = "" + firstLetter;
-        for (int i = 1; i < coder.length; i++) {
-            if (coder[i] != coder[i - 1] && coder[i] != '0') {
-                output += coder[i];
-            }
+        if(coder!=null){
+        	for (int i = 1; i < coder.length; i++) {
+        		if (coder[i] != coder[i - 1] && coder[i] != '0') {
+        			output += coder[i];
+        		}
+        	}
         }
         // padding with 0's or truncate
         output = output + "0000";

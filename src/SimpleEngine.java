@@ -4,12 +4,25 @@ import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.util.*;
 
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+
+import soundex.Soundex;
+
+
+
+
+
 /**
 A very simple search engine. Uses an inverted index over a folder of TXT files.
  */
 public class SimpleEngine {
 	
-	static HashMap<List<String>,NaiveInvertedIndex> fileIndex=new HashMap<List<String>,NaiveInvertedIndex>();
+	static HashMap<List<String>,NaiveInvertedIndex> fileIndexMap=new HashMap<List<String>,NaiveInvertedIndex>();
+	
+	static HashMap<List<String>,NaiveInvertedIndex> bodyIndexMap=new HashMap<List<String>,NaiveInvertedIndex>();
+	static HashMap<List<String>,NaiveInvertedIndex> authorIndexMap=new HashMap<List<String>,NaiveInvertedIndex>();
+	static List<String> soundExFileNames = new ArrayList<String>();
 	
 	
 	
@@ -17,16 +30,19 @@ public class SimpleEngine {
 
 	//public static void main(String[] args) throws IOException {
 
-	public static HashMap getIndex(String corpusName)throws IOException {
+	public static HashMap getIndex(String corpusName, String algoType)throws IOException {
 		
 		
 		final Path currentWorkingPath = Paths.get(corpusName).toAbsolutePath();
 
 		// the inverted index
 		final NaiveInvertedIndex index = new NaiveInvertedIndex();
+		final NaiveInvertedIndex bodyIndex = new NaiveInvertedIndex();
+		final NaiveInvertedIndex authorIndex = new NaiveInvertedIndex();
 
 		// the list of file names that were processed
 		final List<String> fileNames = new ArrayList<String>();
+		
 
 
 		// This is our standard "walk through all .txt files" code.
@@ -45,6 +61,13 @@ public class SimpleEngine {
 			public FileVisitResult visitFile(Path file,
 					BasicFileAttributes attrs) throws FileNotFoundException {
 				// only process .txt files
+				
+				if(algoType.equals("SoundEX")){
+					soundExFileNames.add(file.getFileName().toString());
+					indexFile(file.toFile(), bodyIndex,authorIndex, mDocumentID,algoType);
+					
+					mDocumentID++;
+				}
 				if (file.toString().endsWith(".txt") ) {
 					// we have found a .txt file; add its name to the fileName list,
 					// then index the file and increase the document ID counter.
@@ -67,16 +90,31 @@ public class SimpleEngine {
 			}
 
 		});
+		
+		if(algoType.equals("SoundEX")){
+			System.out.println("Body:");
+			printResults(bodyIndex, fileNames);
+			System.out.println("Author:");
+			printResults(authorIndex, fileNames);
+			bodyIndexMap.put(fileNames, bodyIndex);
+			authorIndexMap.put(fileNames,authorIndex);
+			
+			return authorIndexMap;
+			
 
-		printResults(index, fileNames);
+			
+		}else{
+
+			printResults(index, fileNames);
+			fileIndexMap.put(fileNames,index);
+			return fileIndexMap;
+		}
 		//searchWord(index,fileNames);
 
 		// Implement the same program as in Homework 1: ask the user for a term,
 		// retrieve the postings list for that term, and print the names of the 
 		// documents which contain the term.
-		fileIndex.put(fileNames,index);
-
-		return fileIndex; 
+ 
 	}
 
 	/**
@@ -107,6 +145,80 @@ public class SimpleEngine {
 			pos++;
 
 		}
+
+
+
+
+
+	}
+	
+	
+	private static void indexFile(File file, NaiveInvertedIndex bodyIndex,NaiveInvertedIndex authorIndex, 
+			int docID,String algoType) throws FileNotFoundException{
+		// TO-DO: finish this method for indexing a particular file.
+		// Construct a SimpleTokenStream for the given File.
+		// Read each token from the stream and add it to the index.
+		
+		JsonParser parser = new JsonParser();
+		String body = new String();
+		
+		String author=new String();
+		
+		
+		JsonElement a =   parser.parse(new FileReader(file));
+
+			
+		    JsonObject jsonObject = (JsonObject) a;
+
+		    body = (String) jsonObject.get("body").toString();
+
+		    author=(String) jsonObject.get("author").toString();
+
+		   
+		  
+		  
+		  SimpleTokenStream simpleTokenBodyObj= new SimpleTokenStream(body);
+		  SimpleTokenStream simpleTokenAuthorObj= new SimpleTokenStream(author);
+		  
+		  String temp =new String();
+		  int pos=0;
+		  int count=0;
+		  
+		  
+		  
+		  while(simpleTokenBodyObj.hasNextToken()){
+			  
+			  String temp1=simpleTokenBodyObj.nextToken();
+			  
+			  System.out.println("temp1:  "+temp1+" Count: "+count++);
+			  
+			  temp= Soundex.soundex(simpleTokenBodyObj.nextToken());
+			  bodyIndex.addTerm(temp, docID,pos);
+			  pos++;
+			  
+		  }
+		  pos=0;
+		  while(simpleTokenAuthorObj.hasNextToken()){
+			  temp= Soundex.soundex(simpleTokenAuthorObj.nextToken());
+			  authorIndex.addTerm(temp, docID, pos);
+			  pos++;
+			  
+		  }
+		
+		
+		/*SimpleTokenStream simpleTokenObj= new SimpleTokenStream(file);
+		int pos=0;
+		while(simpleTokenObj.hasNextToken()){
+			// String fn= file.getName();
+			//Write code for PorterStemmer
+			String temp[]= callPC(simpleTokenObj.nextToken());
+			for(String temp1: temp){
+				index.addTerm(temp1, docID,pos);   
+			}
+			pos++;
+
+		}*/
+		
 
 
 
