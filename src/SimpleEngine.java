@@ -68,7 +68,8 @@ public class SimpleEngine {
 					
 					mDocumentID++;
 				}
-				if (file.toString().endsWith(".txt") ) {
+				//if (file.toString().endsWith(".txt") ) {
+				else{
 					// we have found a .txt file; add its name to the fileName list,
 					// then index the file and increase the document ID counter.
 					//System.out.println("Indexing file " + file.getFileName());
@@ -132,8 +133,18 @@ public class SimpleEngine {
 		// TO-DO: finish this method for indexing a particular file.
 		// Construct a SimpleTokenStream for the given File.
 		// Read each token from the stream and add it to the index.
+		
+		JsonParser parser = new JsonParser();
+		String body = new String();
+		JsonElement a =   parser.parse(new FileReader(file));
+		JsonObject jsonObject = (JsonObject) a;
 
-		SimpleTokenStream simpleTokenObj= new SimpleTokenStream(file);
+	    body = (String) jsonObject.get("body").toString();
+	    //System.out.println("body: "+body);
+	    
+	    SimpleTokenStream simpleTokenObj= new SimpleTokenStream(body);
+
+		//SimpleTokenStream simpleTokenObj= new SimpleTokenStream(file);
 		int pos=0;
 		while(simpleTokenObj.hasNextToken()){
 			// String fn= file.getName();

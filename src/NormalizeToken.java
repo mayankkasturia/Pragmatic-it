@@ -16,6 +16,9 @@ public class NormalizeToken {
     public static ArrayList normalizeToken(String token) {
         //convert the token to lower case
         //String[] term = new String[]{};
+    	ArrayList<String> term = new ArrayList<>();
+    	if(token!=null){
+    	
         token = token.toLowerCase();
         // remove all non-alphanumeric characters from begining
         token = token.replaceAll("^[^a-zA-Z0-9\\s]*", "");
@@ -26,7 +29,7 @@ public class NormalizeToken {
         // remove all apostropes (single quotes)
         token = token.replaceAll("[']", "");
         //System.out.println("Remove all single quotes: " + token);
-        ArrayList<String> term = new ArrayList<>();
+        
         
         
         if (token.contains("-")) {
@@ -45,6 +48,7 @@ public class NormalizeToken {
         }
         
             term.add(token);
+    	}
         return term;
     }
 }
