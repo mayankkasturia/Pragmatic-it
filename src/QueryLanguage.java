@@ -217,8 +217,11 @@ while(andTokensizer.hasMoreTokens()){
 // do a intersection of  the results of other token with andTokensResults and store the same in andTokensResults.
     if(andTokensResultSet.isEmpty()){
                 andTokensResultSet = wordQuery(index, word,"");//add ps 
-                } else{
+                } else {
                    andTokensResultSet.retainAll(index.getDocumentId(word));
+                }
+                if(!phraseList.isEmpty()){
+                    andTokensResultSet.retainAll(phraseList);
                 }
                 andTokensResults = new ArrayList<>(andTokensResultSet);
 }
@@ -238,15 +241,15 @@ resultList.add(andTokensResults);
 
 // finally add the result of strictPhrase into the same and return your result.
         System.out.println("value of count: "+count);
-        if(count<=1 ) {
-            if(!phraseList.isEmpty())
-            {
-            set.retainAll(phraseList);
-            }
-        }
-        else{
-            set.addAll(phraseList);
-        }
+//        if(count<=1 ) {
+//            if(!phraseList.isEmpty())
+//            {
+//            set.retainAll(phraseList);
+//            }
+//        }
+//        else{
+//            set.addAll(phraseList);
+//        }
         finalResultList = new ArrayList<>(set);
         Iterator iterator = finalResultList.iterator();
         count = 0;
