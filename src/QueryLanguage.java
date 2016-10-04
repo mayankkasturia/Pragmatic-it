@@ -180,12 +180,14 @@ if (input.equalsIgnoreCase(":q")) {
 
 StringTokenizer orTokenizer = new StringTokenizer(input, "+");
 List<List<String>> resultList = new ArrayList<>();
-Set<String> phraseSet;
-List<String> phraseList = new ArrayList<>();
+
+
 int firstPhraseIndex = -1;
 int lastPhraseIndex = -1;
 String pharseQueryString = null;
 while(orTokenizer.hasMoreTokens()){
+    Set<String> phraseSet;
+List<String> phraseList = new ArrayList<>();
 String andTokens = orTokenizer.nextToken();
 firstPhraseIndex = andTokens.indexOf(pharseIdentifier);
 lastPhraseIndex = andTokens.lastIndexOf(pharseIdentifier);
@@ -197,18 +199,22 @@ pharseQueryString = andTokens.substring(firstPhraseIndex, lastPhraseIndex);
 }
 if (firstPhraseIndex == 0){
     if(lastPhraseIndex+1 == input.length()){
-        break;
+        
+        //break;
     }
-   andTokens = andTokens.substring(lastPhraseIndex + 1, andTokens.length()); 
+    else{
+        andTokens = andTokens.substring(lastPhraseIndex + 1, andTokens.length());
+    }
 }else if(lastPhraseIndex+1 == input.length()){
     andTokens = andTokens.substring(0,firstPhraseIndex-1);
 }
 //andTokens = andTokens.replaceAll(pharseQueryString, "");
 //if(!andTokens.isEmpty()){
-StringTokenizer andTokensizer = new StringTokenizer(andTokens, " ");
-System.out.println("Count of andTokensizer elements: " + andTokensizer.countTokens());
 Set<String> andTokensResultSet = new TreeSet<>();
 List<String> andTokensResults = new ArrayList<>();
+StringTokenizer andTokensizer = new StringTokenizer(andTokens, " ");
+System.out.println("Count of andTokensizer elements: " + andTokensizer.countTokens());
+
 count++;
 while(andTokensizer.hasMoreTokens()){
     String toStem = andTokensizer.nextToken();
@@ -225,6 +231,13 @@ while(andTokensizer.hasMoreTokens()){
                 }
                 andTokensResults = new ArrayList<>(andTokensResultSet);
 }
+if(andTokensResults.isEmpty()){
+     if(!phraseList.isEmpty()){
+                    andTokensResultSet.addAll(phraseList);
+                }
+
+}
+andTokensResults = new ArrayList<>(andTokensResultSet);
 // now do a function search passing pharseQueryString if pharseQueryString is not null AND do a intersection of  the results
 // store the results of all the andTokens into the result list.
 resultList.add(andTokensResults);
@@ -232,6 +245,8 @@ resultList.add(andTokensResults);
 }
  List<String> finalResultList = new ArrayList<>();
  Set<String> set = new HashSet<>();
+ 
+ 
 
 // Now traverse the resultList and do the union of each list stored.
  for (List a : resultList) {
