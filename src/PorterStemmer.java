@@ -34,6 +34,7 @@ public class PorterStemmer {
     private static final Pattern ENDS_WITH_CVC = Pattern.compile(CONSONANT_INTERIM + VOWEL_INTERIM + CONSONANT_INTERIM + "$");
 
     private static enum stepName {
+
         stepTwo, stepThree, stepFour
     };
     private static final String[][] STEP_TWO_PAIRS = {
@@ -110,7 +111,7 @@ public class PorterStemmer {
             if (token.endsWith("ss")) {
             } else {
                 token = token.substring(0, token.length() - 1);
-               //System.out.println("1a.3 ends with s and not ss: " + token);
+                //System.out.println("1a.3 ends with s and not ss: " + token);
             }
         }
 
@@ -231,7 +232,7 @@ public class PorterStemmer {
         if (token.endsWith("e")) {
             if (MEASURE_GR1.matcher(token).find()) {
                 token = token.substring(0, token.length() - 1);
-               // System.out.println("step 5a ends with e & measure greater than 1: " + token);
+                // System.out.println("step 5a ends with e & measure greater than 1: " + token);
             }
             if (MEASURE_EQ1.matcher(token).find()) {
                 if (!ENDS_WITH_CVC.matcher(token).find()) {

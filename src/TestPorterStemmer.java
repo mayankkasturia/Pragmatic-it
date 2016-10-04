@@ -7,6 +7,7 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
+
 /**
  *
  * @author manikhanuja
@@ -34,15 +35,5 @@ public class TestPorterStemmer {
 //        }
 //
 //    }
-   
-
 
 }
-
-               
-                
-                
-
-    
-
-
