@@ -185,23 +185,7 @@ public class QueryLanguage {
                         	
                 }
                 
-                
-                
-                for(int i=0;i<docId.size();i++){
-                	Iterator itr=tempDocSet.iterator();
-                	boolean item=false;
-                    while(itr.hasNext()){
-                    	if(documentIds.get(i)==itr.next()){
-                    		item=true;
-                    		
-                    	}
-                    	
-                    }
-                    if(item==false){
-                    	documentIds1.add(documentIds.get(i));
-                    }
-                }
-                
+                documentIds.removeAll(tempDocSet);
              
                 
             
@@ -214,7 +198,7 @@ public class QueryLanguage {
         
 public static void queryParser(NaiveInvertedIndex index, String query,List<String> fileNames) throws IOException {
         String pharseIdentifier = "\"";
-int count = 0;
+//int count = 0;
 // Prepare a final outPut List.
  
 String input = query;
@@ -232,7 +216,7 @@ int lastPhraseIndex = -1;
 String pharseQueryString = null;
 String notQueryString=null;
 while(orTokenizer.hasMoreTokens()){
-	
+	int count=0;
 	Set<String> notSet=null;
 	List<String> notList = null;
 	
@@ -272,7 +256,7 @@ List<String> andTokensResults = new ArrayList<>();
 StringTokenizer andTokensizer = new StringTokenizer(andTokens, " ");
 System.out.println("Count of andTokensizer elements: " + andTokensizer.countTokens());
 
-count++;
+//count++;
 while(andTokensizer.hasMoreTokens()){
 	Boolean notQueryBoolean=false;
     String toStem = andTokensizer.nextToken();
@@ -320,7 +304,9 @@ while(andTokensizer.hasMoreTokens()){
                 	
                 }
                 andTokensResults = new ArrayList<>(andTokensResultSet);
+                
 }
+count=0;
 if(andTokensResults.isEmpty()){
      if(!phraseList.isEmpty()){
     	 andTokensResultSet=new HashSet();
@@ -364,7 +350,7 @@ resultList.add(andTokensResults);
 //        }
         finalResultList = new ArrayList<>(set);
         Iterator iterator = finalResultList.iterator();
-        count = 0;
+        //count = 0;
         while (iterator.hasNext()) {
             System.out.println("Query Parser Index: " + fileNames.get(Integer.parseInt(iterator.next().toString())));
         } 
