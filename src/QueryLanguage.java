@@ -167,6 +167,51 @@ public class QueryLanguage {
         main(new String[] {"a","b","c"});
     }
 
+        public static Set notWordQuery(NaiveInvertedIndex index, String word,List docId) {
+            System.out.println("I am a NOT Query");
+            System.out.println("Word: "+word);
+                String[] words = word.split("[ ]");
+                Set<Integer> tempDocSet = new HashSet<Integer>();
+                List<Integer> documentIds = new ArrayList<Integer>();
+                Set<Integer> documentIds1 = new HashSet<Integer>();
+                for(int i=0;i<docId.size();i++){
+                	documentIds.add(i);
+                }
+                if(words.length>1)
+                        {
+                            tempDocSet = phraseWordQuery(index,word,docId);
+                        } else{
+                        	    tempDocSet=wordQuery(index,word,"");
+                        	
+                }
+                
+                
+                
+                for(int i=0;i<docId.size();i++){
+                	Iterator itr=tempDocSet.iterator();
+                	boolean item=false;
+                    while(itr.hasNext()){
+                    	if(documentIds.get(i)==itr.next()){
+                    		item=true;
+                    		
+                    	}
+                    	
+                    }
+                    if(item==false){
+                    	documentIds1.add(documentIds.get(i));
+                    }
+                }
+                
+             
+                
+            
+            /*for(int a : documentIds)
+            {
+                System.out.println("Word is not present in: " + a);
+            }*/
+            return documentIds1;
+        }
+        
 public static void queryParser(NaiveInvertedIndex index, String query,List<String> fileNames) throws IOException {
         String pharseIdentifier = "\"";
 int count = 0;
@@ -185,17 +230,29 @@ List<List<String>> resultList = new ArrayList<>();
 int firstPhraseIndex = -1;
 int lastPhraseIndex = -1;
 String pharseQueryString = null;
+String notQueryString=null;
 while(orTokenizer.hasMoreTokens()){
+	
+	Set<String> notSet=null;
+	List<String> notList = null;
+	
     Set<String> phraseSet;
 List<String> phraseList = new ArrayList<>();
 String andTokens = orTokenizer.nextToken();
 firstPhraseIndex = andTokens.indexOf(pharseIdentifier);
 lastPhraseIndex = andTokens.lastIndexOf(pharseIdentifier);
 if (firstPhraseIndex > -1 && lastPhraseIndex > -1){
+	if(firstPhraseIndex==0 || andTokens.charAt(firstPhraseIndex-1)!='!'){
 pharseQueryString = andTokens.substring(firstPhraseIndex, lastPhraseIndex);
             phraseSet = phraseWordQuery(index, pharseQueryString,fileNames);
             //pharseQueryString.replaceAll(" ","&");
             phraseList = new ArrayList<>(phraseSet);
+	}else{
+		notQueryString = andTokens.substring(firstPhraseIndex, lastPhraseIndex);
+		notSet=notWordQuery(index, notQueryString,fileNames);
+		notList=new ArrayList<>(notSet);
+		
+	}
 }
 if (firstPhraseIndex == 0){
     if(lastPhraseIndex+1 == input.length()){
@@ -217,24 +274,64 @@ System.out.println("Count of andTokensizer elements: " + andTokensizer.countToke
 
 count++;
 while(andTokensizer.hasMoreTokens()){
+	Boolean notQueryBoolean=false;
     String toStem = andTokensizer.nextToken();
     String word = SimpleEngine.callPoterStem(toStem);
+    if(toStem.charAt(0)=='!'){
+    	notQueryBoolean=true;
+    	if(notSet==null){
+    	notSet=notWordQuery(index, word,fileNames);
+    	notList=new ArrayList<>(notSet);
+		
+    	}
+    	else{
+    		notSet.retainAll(notWordQuery(index, word,fileNames));
+    		notList.retainAll(notSet);
+    		
+    		
+    	}
+    	
+    	
+    }
+    
+    
+   
 // do a function search passing andTokensizer.nextToken and store it in andTokensResults.
 // do a intersection of  the results of other token with andTokensResults and store the same in andTokensResults.
-    if(andTokensResultSet.isEmpty()){
-                andTokensResultSet = wordQuery(index, word,"");//add ps 
-                } else {
-                   andTokensResultSet.retainAll(index.getDocumentId(word));
+    
+    if(andTokensResultSet.isEmpty() &&count==0){
+    			//counter=0
+                andTokensResultSet = wordQuery(index, word,"");//add ps
+                //counter =1
+                count++;
+                
+                
+                } else /*if(notQueryBoolean==true)*/{
+                	
+                		/*andTokensResultSet=new HashSet<>();*/
+                		andTokensResultSet.retainAll(index.getDocumentId(word));
+                	
                 }
                 if(!phraseList.isEmpty()){
                     andTokensResultSet.retainAll(phraseList);
+                }
+                if(notList!=null){
+                	andTokensResultSet.retainAll(notList);
+                	
                 }
                 andTokensResults = new ArrayList<>(andTokensResultSet);
 }
 if(andTokensResults.isEmpty()){
      if(!phraseList.isEmpty()){
+    	 andTokensResultSet=new HashSet();
                     andTokensResultSet.addAll(phraseList);
                 }
+     if( notList!=null && !notList.isEmpty()){
+    	 andTokensResultSet=new HashSet();
+    	 
+    		andTokensResultSet.addAll(notList);
+    	 
+     }
 
 }
 andTokensResults = new ArrayList<>(andTokensResultSet);
@@ -255,7 +352,7 @@ resultList.add(andTokensResults);
         finalResultList = new ArrayList<>(set);
 
 // finally add the result of strictPhrase into the same and return your result.
-        System.out.println("value of count: "+count);
+        
 //        if(count<=1 ) {
 //            if(!phraseList.isEmpty())
 //            {
