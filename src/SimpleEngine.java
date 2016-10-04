@@ -64,7 +64,7 @@ public class SimpleEngine {
 				
 				if(algoType.equals("SoundEX")){
 					soundExFileNames.add(file.getFileName().toString());
-					indexFile(file.toFile(), bodyIndex,authorIndex, mDocumentID,algoType);
+					indexFile(file.toFile(), bodyIndex,authorIndex, mDocumentID);
 					
 					mDocumentID++;
 				}
@@ -77,7 +77,7 @@ public class SimpleEngine {
 
 					fileNames.add(file.getFileName().toString());
 
-					indexFile(file.toFile(), index, mDocumentID);
+					indexFile(file.toFile(), index, mDocumentID,algoType);
 					mDocumentID++;
 				}
 				return FileVisitResult.CONTINUE;
@@ -93,10 +93,10 @@ public class SimpleEngine {
 		});
 		
 		if(algoType.equals("SoundEX")){
-			System.out.println("Body:");
-			printResults(bodyIndex, fileNames);
-			System.out.println("Author:");
-			printResults(authorIndex, fileNames);
+			//System.out.println("Body:");
+			//printResults(bodyIndex, fileNames);
+			//System.out.println("Author:");
+			//printResults(authorIndex, fileNames);
 			bodyIndexMap.put(fileNames, bodyIndex);
 			authorIndexMap.put(fileNames,authorIndex);
 			
@@ -129,7 +129,7 @@ public class SimpleEngine {
    each term from the document.
 	 */
 	private static void indexFile(File file, NaiveInvertedIndex index, 
-			int docID) throws FileNotFoundException{
+			int docID,String algoType) throws FileNotFoundException{
 		// TO-DO: finish this method for indexing a particular file.
 		// Construct a SimpleTokenStream for the given File.
 		// Read each token from the stream and add it to the index.
@@ -143,9 +143,25 @@ public class SimpleEngine {
 	    //System.out.println("body: "+body);
 	    
 	    SimpleTokenStream simpleTokenObj= new SimpleTokenStream(body);
-
+            if(algoType.equals("type")){
 		//SimpleTokenStream simpleTokenObj= new SimpleTokenStream(file);
 		int pos=0;
+		while(simpleTokenObj.hasNextToken()){
+			// String fn= file.getName();
+			//Write code for PorterStemmer
+			String temp[]= toLowerCase(simpleTokenObj.nextToken());
+			for(String temp1: temp){
+				index.addTerm(temp1, docID,pos);   
+			}
+			pos++;
+
+		}
+			
+                System.out.println("algo type is working");
+		}
+        
+            else{
+            	int pos=0;
 		while(simpleTokenObj.hasNextToken()){
 			// String fn= file.getName();
 			//Write code for PorterStemmer
@@ -156,8 +172,8 @@ public class SimpleEngine {
 			pos++;
 
 		}
-
-
+                System.out.println("index files are working");
+            }
 
 
 
@@ -165,7 +181,7 @@ public class SimpleEngine {
 	
 	
 	private static void indexFile(File file, NaiveInvertedIndex bodyIndex,NaiveInvertedIndex authorIndex, 
-			int docID,String algoType) throws FileNotFoundException{
+			int docID) throws FileNotFoundException{
 		// TO-DO: finish this method for indexing a particular file.
 		// Construct a SimpleTokenStream for the given File.
 		// Read each token from the stream and add it to the index.
@@ -201,7 +217,7 @@ public class SimpleEngine {
 			  
 			  String temp1=simpleTokenBodyObj.nextToken();
 			  
-			  System.out.println("temp1:  "+temp1+" Count: "+count++);
+			  //System.out.println("temp1:  "+temp1+" Count: "+count++);
 			  
 			  temp= Soundex.soundex(simpleTokenBodyObj.nextToken());
 			  bodyIndex.addTerm(temp, docID,pos);
@@ -331,5 +347,21 @@ public class SimpleEngine {
 	
 }
         //public static 
+public static String[] toLowerCase(String token){
+		String[] processToken;
+
+		ArrayList<String> normalizeToken=new ArrayList<>();
+		normalizeToken = NormalizeToken.normalizeToken(token);
+		//System.out.println("Normalized Token: " + normalizeToken);
+		int i=0;
+		processToken=new String[normalizeToken.size()];
+		for(String tkn:normalizeToken){
+			//System.out.println("we are on "+tkn);
+			processToken[i] = tkn;
+		}
+                
+		return processToken;
+
+	}
 
 }

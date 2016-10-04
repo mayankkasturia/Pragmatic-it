@@ -28,9 +28,13 @@ import soundex.Soundex;
  */
 public class QueryLanguage {
 	static boolean booleanQuery=true;
+        static int numberType;
         public static void main(String[] args) throws IOException {
         	HashMap<List<String>,NaiveInvertedIndex> fileIndex=new HashMap<List<String>,NaiveInvertedIndex>();
+                HashMap<List<String>,NaiveInvertedIndex> fileTypeIndex=new HashMap<List<String>,NaiveInvertedIndex>();
         	ArrayList<String> fileNames=new ArrayList<String>();
+                String typeVocab;
+               
    // public static void readQueryFromUser(NaiveInvertedIndex index) {
 
         System.out.println("Main Menu");
@@ -55,11 +59,12 @@ public class QueryLanguage {
         
         //vocab - print all the terms in the vocabulary of the corpus, one term per line. Then print the count of the total number of vocabulary terms
         if (query.equalsIgnoreCase(":vocab")) {
+            typeVocab="vocab";
             System.out.println("Enter the name of corpus: ");
             String corpusName = readQueryFromUser();
             NaiveInvertedIndex index = new NaiveInvertedIndex();
-            fileIndex =SimpleEngine.getIndex(corpusName,"PS");
-			Iterator itr=fileIndex.entrySet().iterator();
+            fileTypeIndex =SimpleEngine.getIndex(corpusName,"type");
+			Iterator itr=fileTypeIndex.entrySet().iterator();
 			while(itr.hasNext()){
 				Map.Entry entry=(Map.Entry)itr.next();
 				index=(NaiveInvertedIndex) entry.getValue();
@@ -70,24 +75,57 @@ public class QueryLanguage {
 			}
 
             
-            getVocabulary(index);
+            getVocabulary(index,typeVocab);
         }
           if (query.equalsIgnoreCase(":statistics")) {
+               typeVocab="stats";
             System.out.println("Enter the name of corpus: ");
             String corpusName = readQueryFromUser();
-            NaiveInvertedIndex statsIndex = new NaiveInvertedIndex();
+            
+//            NaiveInvertedIndex typeIndex = new NaiveInvertedIndex();//type starts 
+//            fileTypeIndex =SimpleEngine.getIndex(corpusName,"type");
+//			Iterator typeItr=fileTypeIndex.entrySet().iterator();
+//			while(typeItr.hasNext()){
+//				Map.Entry tEntry=(Map.Entry)typeItr.next();
+//				typeIndex=(NaiveInvertedIndex) tEntry.getValue();
+//				fileNames=(ArrayList<String>) tEntry.getKey();
+//			}
+//                        getVocabulary(typeIndex,typeVocab);
+//            
+//            
+            
+            NaiveInvertedIndex statsIndex = new NaiveInvertedIndex();//term starts here
             fileIndex =SimpleEngine.getIndex(corpusName,"");
 			Iterator itr=fileIndex.entrySet().iterator();
 			while(itr.hasNext()){
 				Map.Entry entry=(Map.Entry)itr.next();
 				statsIndex=(NaiveInvertedIndex) entry.getValue();
 				fileNames=(ArrayList<String>) entry.getKey();
-				
-
-
 			}
-                        IndexStatistics.getStatistics(statsIndex);
-        }
+                        IndexStatistics.getStatistics(statsIndex,0);//terms
+                        
+               System.out.println("Wait for soundex corpus to compile: ");   
+               NaiveInvertedIndex soundIndex = new NaiveInvertedIndex();
+                  
+             String SoundCorpusName = "C:\\Users\\Mayankkasturia\\Downloads\\mlb-articles-4000\\1";
+            String algoType="SoundEX";
+            fileIndex =SimpleEngine.getIndex(SoundCorpusName,algoType);
+            
+			Iterator sItr=fileIndex.entrySet().iterator();
+			while(sItr.hasNext()){
+				Map.Entry sEntry=(Map.Entry)sItr.next();
+				soundIndex=(NaiveInvertedIndex) sEntry.getValue();
+				fileNames=(ArrayList<String>) sEntry.getKey();
+				
+                         
+                        }//while ends
+                        IndexStatistics.getStatistics(soundIndex,1);//soundex
+                        IndexStatistics.grandTotal();//total
+                        
+                        
+                        
+                        
+        }//stats ends
         //Pending
         // :index directoryname - index the folder specified by directoryname and then begins querying it
         
@@ -126,8 +164,8 @@ public class QueryLanguage {
             System.out.println(code1 + ": " + "Mani");
             System.out.println(code2 + ": " + "Money");
             
-            System.out.println("Enter the name of corpus: ");
-            String corpusName = readQueryFromUser();
+            //System.out.println("Enter the name of corpus: ");
+            String corpusName = "C:\\Users\\Mayankkasturia\\Downloads\\mlb-articles-4000\\1";
             NaiveInvertedIndex index = new NaiveInvertedIndex();
             String algoType="SoundEX";
             fileIndex =SimpleEngine.getIndex(corpusName,algoType);
@@ -373,14 +411,22 @@ resultList.add(andTokensResults);
                 }
             }
     }
-    public static void getVocabulary(NaiveInvertedIndex index)
+    public static void getVocabulary(NaiveInvertedIndex index,String typeOfSearch)
     {
+        
+
         String token[] = index.getDictionary();
+           if(typeOfSearch.equals("vocab")){
             System.out.println("Vocabulary! ");
             for (String vocabTerm : token) {
                 System.out.println(vocabTerm);
             }
+         
             System.out.println("Count of total vocabulary terms: " + index.getTermCount());
-            System.out.println("Exit vocabulary and return to Main Menu!" );
+            System.out.println("Exit vocabulary and return to Main Menu!" );}
+           else{
+           System.out.println("I am Stats");
+           }
+            numberType=index.getTermCount();
     }
 }
