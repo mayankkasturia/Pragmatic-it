@@ -172,7 +172,7 @@ public class QueryLanguage {
             System.out.println("Word: "+word);
                 String[] words = word.split("[ ]");
                 Set<Integer> tempDocSet = new HashSet<Integer>();
-                List<Integer> documentIds = new ArrayList<Integer>();
+                Set<Integer> documentIds = new HashSet<Integer>();
                 Set<Integer> documentIds1 = new HashSet<Integer>();
                 for(int i=0;i<docId.size();i++){
                 	documentIds.add(i);
@@ -193,7 +193,7 @@ public class QueryLanguage {
             {
                 System.out.println("Word is not present in: " + a);
             }*/
-            return documentIds1;
+            return documentIds;
         }
         
 public static void queryParser(NaiveInvertedIndex index, String query,List<String> fileNames) throws IOException {
