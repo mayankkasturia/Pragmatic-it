@@ -2,7 +2,9 @@
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -36,7 +38,12 @@ public class IndexStatistics {
                         frequency.put(temp, finalList.keySet().size());
                         
                                   }
-            System.out.println(frequency);
+            
+            Iterator itr=frequency.entrySet().iterator();
+		while(itr.hasNext()){
+		Map.Entry entry=(Map.Entry)itr.next();
+		System.out.println(fileNames.get(Integer.parseInt(entry.getKey().toString()))+" ");
+            
             int i;
             double sum = 0;
             for(i = 0; i < averageOfPL.size(); i++){
