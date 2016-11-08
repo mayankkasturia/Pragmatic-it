@@ -55,22 +55,24 @@ public class NaiveInvertedIndex {
       // TO-DO: fill an array of Strings with all the keys from the hashtable.
         // Sort the array and return it.
         //Map<String,HashMap<Integer,List<Integer>>> treeMap = new TreeMap<String,HashMap<Integer,List<Integer>>>(mIndex); 
-        Iterator iter = mIndex.entrySet().iterator();
-        String temp[] = new String[mIndex.size()];
+        String[] dict = mIndex.keySet().toArray(new String[0]);
+        Arrays.sort(dict);
+//        Iterator iter = mIndex.entrySet().iterator();
+//        String temp[] = new String[mIndex.size()];
+//
+//        int i = 0;
+//
+//       //for(String temp1: treeMap.keySet()){
+//        //  temp[i]=temp1;
+//        //i++;
+//        //}
+//        while (iter.hasNext()) {
+//            Map.Entry entry = (Map.Entry) iter.next();
+//            temp[i] = entry.getKey().toString();
+//
+//            i++;
+//        }
 
-        int i = 0;
-
-       //for(String temp1: treeMap.keySet()){
-        //  temp[i]=temp1;
-        //i++;
-        //}
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            temp[i] = entry.getKey().toString();
-
-            i++;
-        }
-
-        return temp;
+        return dict;
     }
 }

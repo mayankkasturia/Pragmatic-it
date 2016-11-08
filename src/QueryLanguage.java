@@ -189,31 +189,35 @@ public class QueryLanguage {
         main(new String[]{"a", "b", "c"});
     }
 
-    public static Set notWordQuery(NaiveInvertedIndex index, String word, List docId) {
-        System.out.println("I am a NOT Query");
-        System.out.println("Word: " + word);
-        String[] words = word.split("[ ]");
-        Set<Integer> tempDocSet = new HashSet<Integer>();
-        List<Integer> documentIds = new ArrayList<Integer>();
-        Set<Integer> documentIds1 = new HashSet<Integer>();
-        for (int i = 0; i < docId.size(); i++) {
-            documentIds.add(i);
+        public static Set notWordQuery(NaiveInvertedIndex index, String word,List docId) {
+            System.out.println("I am a NOT Query");
+            System.out.println("Word: "+word);
+                String[] words = word.split("[ ]");
+                Set<Integer> tempDocSet = new HashSet<Integer>();
+                Set<Integer> documentIds = new HashSet<Integer>();
+                Set<Integer> documentIds1 = new HashSet<Integer>();
+                for(int i=0;i<docId.size();i++){
+                	documentIds.add(i);
+                }
+                if(words.length>1)
+                        {
+                            tempDocSet = phraseWordQuery(index,word,docId);
+                        } else{
+                        	    tempDocSet=wordQuery(index,word,"");
+                        	
+                }
+                
+                documentIds.removeAll(tempDocSet);
+             
+                
+            
+            /*for(int a : documentIds)
+            {
+                System.out.println("Word is not present in: " + a);
+            }*/
+            return documentIds;
         }
-        if (words.length > 1) {
-            tempDocSet = phraseWordQuery(index, word, docId);
-        } else {
-            tempDocSet = wordQuery(index, word, "");
-
-        }
-
-        documentIds.removeAll(tempDocSet);
-
-        /*for(int a : documentIds)
-         {
-         System.out.println("Word is not present in: " + a);
-         }*/
-        return documentIds1;
-    }
+        
 
     public static void queryParser(NaiveInvertedIndex index, String query, List<String> fileNames) throws IOException {
         String pharseIdentifier = "\"";
@@ -358,9 +362,12 @@ public class QueryLanguage {
         finalResultList = new ArrayList<>(set);
         Iterator iterator = finalResultList.iterator();
         //count = 0;
+        int totalCount=0;
         while (iterator.hasNext()) {
             System.out.println("Query Parser Index: " + fileNames.get(Integer.parseInt(iterator.next().toString())));
+            totalCount++;
         }
+        System.out.println("Total results: "+totalCount);
     }
 
     public static String readQueryFromUser() {
@@ -376,12 +383,15 @@ public class QueryLanguage {
         if (algoType.equals("SoundEx") && index.getPostings(word) != null) {
             Iterator itr = index.getPostings(word).entrySet().iterator();
             System.out.println("File Names:");
+            int totalCount=0;
             while (itr.hasNext()) {
                 Map.Entry entry = (Map.Entry) itr.next();
                 System.out.println(SimpleEngine.soundExFileNames.get((int) entry.getKey()));
+                totalCount++;
 
                 //System.out.println(entry.getValue());
             }
+            System.out.println("Total Results: "+totalCount);
         }
         if (index.getPostings(word) == null) {
             System.out.println("Word does not present, enter query again or :q to quit ");
